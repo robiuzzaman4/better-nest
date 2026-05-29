@@ -7,6 +7,10 @@ async function bootstrap() {
     bodyParser: false, // required — better auth handles its own body parsing
   });
 
+  // === GRACEFUL SHUTDOWN ===
+  // This ensures the server cleanly closes connections and frees the port on restart
+  app.enableShutdownHooks();
+
   // === GLOBAL API PREFIX ===
   app.setGlobalPrefix('api/v1');
 

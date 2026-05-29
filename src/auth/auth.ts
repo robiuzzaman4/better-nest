@@ -2,38 +2,80 @@ import { betterAuth } from 'better-auth';
 import { drizzleAdapter } from 'better-auth/adapters/drizzle';
 import { phoneNumber } from 'better-auth/plugins';
 import { db } from '../db';
+import { env } from '../config/env';
 
 export const auth = betterAuth({
   //  === DATABASE ===
   database: drizzleAdapter(db, {
     provider: 'pg',
+    usePlural: false,
   }),
 
   //  === BASE URL ===
   // baseURL: the URL of THIS NestJS server
-  baseURL: process.env.BETTER_AUTH_URL ?? 'http://localhost:3000',
+  baseURL: env.BETTER_AUTH_URL,
+  basePath: '/api/v1/auth',
 
   // trustedOrigins: your frontend URL(s) — add later when you have a frontend
   // trustedOrigins: ["http://localhost:3001"],
 
   //  === SECRET ===
-  secret: process.env.BETTER_AUTH_SECRET!,
+  secret: env.BETTER_AUTH_SECRET,
 
   //  === USER ===
   // Tell Better Auth your user table has a 'name' and 'phone' field
   user: {
-    additionalFields: {
-      // 'name' is already included by Better Auth by default
-      // 'phone' comes from the phoneNumber plugin
-      // Nothing extra needed here for now — you can add later
+    fields: {
+      emailVerified: 'email_verified',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      image: 'image',
+      phoneNumber: 'phone_number',
+      phoneNumberVerified: 'phone_number_verified',
+    },
+  },
+
+  session: {
+    fields: {
+      expiresAt: 'expires_at',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+      ipAddress: 'ip_address',
+      userAgent: 'user_agent',
+      userId: 'user_id',
+    },
+    expiresIn: 60 * 60 * 24 * 7, // 7 days
+    updateAge: 60 * 60 * 24, // renew if older than 1 day
+  },
+
+  account: {
+    fields: {
+      accountId: 'account_id',
+      providerId: 'provider_id',
+      userId: 'user_id',
+      accessToken: 'access_token',
+      refreshToken: 'refresh_token',
+      idToken: 'id_token',
+      accessTokenExpiresAt: 'access_token_expires_at',
+      refreshTokenExpiresAt: 'refresh_token_expires_at',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
+    },
+  },
+
+  verification: {
+    fields: {
+      expiresAt: 'expires_at',
+      createdAt: 'created_at',
+      updatedAt: 'updated_at',
     },
   },
 
   //  === SOCIAL PROVIDERS ===
   socialProviders: {
     google: {
-      clientId: process.env.GOOGLE_CLIENT_ID!,
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET!,
+      clientId: env.GOOGLE_CLIENT_ID,
+      clientSecret: env.GOOGLE_CLIENT_SECRET,
     },
   },
 
@@ -62,12 +104,6 @@ export const auth = betterAuth({
       },
     }),
   ],
-
-  //  === SESSION ===
-  session: {
-    expiresIn: 60 * 60 * 24 * 7, // 7 days
-    updateAge: 60 * 60 * 24, // renew if older than 1 day
-  },
 });
 
 export type Auth = typeof auth;

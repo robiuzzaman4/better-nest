@@ -5,58 +5,58 @@ export const user = pgTable('user', {
   id: text('id').primaryKey(),
   name: text('name').notNull(),
   email: text('email').notNull().unique(),
-  emailVerified: boolean('email_verified').default(false).notNull(),
+  email_verified: boolean('email_verified').default(false).notNull(),
   image: text('image'),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
-  updatedAt: timestamp('updated_at')
+  created_at: timestamp('created_at').defaultNow().notNull(),
+  updated_at: timestamp('updated_at')
     .defaultNow()
     .$onUpdate(() => /* @__PURE__ */ new Date())
     .notNull(),
-  phoneNumber: text('phone_number').unique(),
-  phoneNumberVerified: boolean('phone_number_verified'),
+  phone_number: text('phone_number').unique(),
+  phone_number_verified: boolean('phone_number_verified'),
 });
 
 export const session = pgTable(
   'session',
   {
     id: text('id').primaryKey(),
-    expiresAt: timestamp('expires_at').notNull(),
+    expires_at: timestamp('expires_at').notNull(),
     token: text('token').notNull().unique(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at')
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at')
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
-    ipAddress: text('ip_address'),
-    userAgent: text('user_agent'),
-    userId: text('user_id')
+    ip_address: text('ip_address'),
+    user_agent: text('user_agent'),
+    user_id: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
   },
-  (table) => [index('session_userId_idx').on(table.userId)],
+  (table) => [index('session_user_id_idx').on(table.user_id)],
 );
 
 export const account = pgTable(
   'account',
   {
     id: text('id').primaryKey(),
-    accountId: text('account_id').notNull(),
-    providerId: text('provider_id').notNull(),
-    userId: text('user_id')
+    account_id: text('account_id').notNull(),
+    provider_id: text('provider_id').notNull(),
+    user_id: text('user_id')
       .notNull()
       .references(() => user.id, { onDelete: 'cascade' }),
-    accessToken: text('access_token'),
-    refreshToken: text('refresh_token'),
-    idToken: text('id_token'),
-    accessTokenExpiresAt: timestamp('access_token_expires_at'),
-    refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
+    access_token: text('access_token'),
+    refresh_token: text('refresh_token'),
+    id_token: text('id_token'),
+    access_token_expires_at: timestamp('access_token_expires_at'),
+    refresh_token_expires_at: timestamp('refresh_token_expires_at'),
     scope: text('scope'),
     password: text('password'),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at')
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at')
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
   },
-  (table) => [index('account_userId_idx').on(table.userId)],
+  (table) => [index('account_user_id_idx').on(table.user_id)],
 );
 
 export const verification = pgTable(
@@ -65,9 +65,9 @@ export const verification = pgTable(
     id: text('id').primaryKey(),
     identifier: text('identifier').notNull(),
     value: text('value').notNull(),
-    expiresAt: timestamp('expires_at').notNull(),
-    createdAt: timestamp('created_at').defaultNow().notNull(),
-    updatedAt: timestamp('updated_at')
+    expires_at: timestamp('expires_at').notNull(),
+    created_at: timestamp('created_at').defaultNow().notNull(),
+    updated_at: timestamp('updated_at')
       .defaultNow()
       .$onUpdate(() => /* @__PURE__ */ new Date())
       .notNull(),
@@ -82,14 +82,14 @@ export const userRelations = relations(user, ({ many }) => ({
 
 export const sessionRelations = relations(session, ({ one }) => ({
   user: one(user, {
-    fields: [session.userId],
+    fields: [session.user_id],
     references: [user.id],
   }),
 }));
 
 export const accountRelations = relations(account, ({ one }) => ({
   user: one(user, {
-    fields: [account.userId],
+    fields: [account.user_id],
     references: [user.id],
   }),
 }));

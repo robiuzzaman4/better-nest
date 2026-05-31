@@ -12,7 +12,9 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   // === GLOBAL API PREFIX ===
-  app.setGlobalPrefix('api/v1');
+  app.setGlobalPrefix('api/v1', {
+    exclude: ['api/v1/auth/(.*)'],
+  });
 
   // === CORS CONFIG ===
   app.enableCors({

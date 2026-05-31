@@ -15,8 +15,9 @@ export const auth = betterAuth({
 
   // === BASE URL & PATH ===
   basePath: '/api/v1/auth',
+  baseURL: env.BETTER_AUTH_URL, // "http://localhost:5000"
   secret: env.BETTER_AUTH_SECRET,
-  baseURL: env.BETTER_AUTH_URL,
+  trustedOrigins: ['http://localhost:3000', 'http://localhost:3001'],
 
   // === FIELD MAPPING FOR CONSISTENT CAMELCASE API ===
   user: {

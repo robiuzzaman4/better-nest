@@ -12,9 +12,7 @@ async function bootstrap() {
   app.enableShutdownHooks();
 
   // === GLOBAL API PREFIX ===
-  app.setGlobalPrefix('api/v1', {
-    exclude: ['api/v1/auth/(.*)'],
-  });
+  app.setGlobalPrefix('api/v1');
 
   // === CORS CONFIG ===
   app.enableCors({
@@ -25,4 +23,4 @@ async function bootstrap() {
   await app.listen(env.PORT);
   console.log(`Server running on http://localhost:${env.PORT}`);
 }
-bootstrap();
+void bootstrap();

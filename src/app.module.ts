@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { APP_FILTER, APP_INTERCEPTOR } from '@nestjs/core';
-import { AuthModule } from '@thallesp/nestjs-better-auth';
+import { AuthModule as BetterAuthModule } from '@thallesp/nestjs-better-auth';
 import { auth } from './auth/auth';
-import { AuthFacadeModule } from './auth/auth-facade.module';
+import { AuthModule } from './auth/auth.module';
 import { ApiExceptionFilter } from './common/api-exception.filter';
 import { ApiResponseInterceptor } from './common/api-response.interceptor';
 import { UsersModule } from './users/users.module';
@@ -19,13 +19,13 @@ import { AppController } from './app.controller';
 
     // === REGISTER BETTER AUTH (AUTHGUARD REGISTERED GLOBALLY) ===
     // all routes protected by default unless decorated @AllowAnonymous()
-    AuthModule.forRoot({
+    BetterAuthModule.forRoot({
       auth,
       disableControllers: true,
     }),
 
     // === REGISTER OWN FEATURE MODULES ===
-    AuthFacadeModule,
+    AuthModule,
     UsersModule,
   ],
   controllers: [AppController],

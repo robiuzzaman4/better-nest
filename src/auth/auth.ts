@@ -41,6 +41,9 @@ export const auth = betterAuth({
       sendOTP: ({ phoneNumber, code }) => {
         console.log(`[DEV] OTP for ${phoneNumber}: ${code}`);
       },
+      sendPasswordResetOTP: ({ phoneNumber, code }) => {
+        console.log(`[DEV] Password reset OTP for ${phoneNumber}: ${code}`);
+      },
       signUpOnVerification: {
         getTempEmail: (phone) => `${phone.replace(/\+/g, '')}@phone.rusign.com`,
         getTempName: (phone) => phone,

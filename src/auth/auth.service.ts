@@ -15,8 +15,24 @@ const verifyPhoneNumberSchema = z.object({
   name: z.string().trim().min(1, 'name is required'),
 });
 
+const signInPhoneNumberSchema = z.object({
+  phoneNumber: z.string().trim().min(1, 'phoneNumber is required'),
+  password: z.string().min(1, 'password is required'),
+  rememberMe: z.boolean().optional(),
+});
+
+const requestPasswordResetSchema = z.object({
+  phoneNumber: z.string().trim().min(1, 'phoneNumber is required'),
+});
+
+const resetPasswordSchema = z.object({
+  phoneNumber: z.string().trim().min(1, 'phoneNumber is required'),
+  otp: z.string().trim().min(1, 'otp is required'),
+  newPassword: z.string().min(1, 'newPassword is required'),
+});
+
 @Injectable()
-export class AuthFacadeService {
+export class AuthService {
   async sendPhoneNumberOtp(payload: unknown) {
     const body = this.parseBody(sendOtpSchema, payload);
 
@@ -51,6 +67,36 @@ export class AuthFacadeService {
 
       betterAuthResponse.user.name = body.name;
     }
+
+    return betterAuthResponse;
+  }
+
+  async signInPhoneNumber(payload: unknown) {
+    const body = this.parseBody(signInPhoneNumberSchema, payload);
+
+    const betterAuthResponse = await auth.api.signInPhoneNumber({
+      body,
+    });
+
+    return betterAuthResponse;
+  }
+
+  async requestPasswordReset(payload: unknown) {
+    const body = this.parseBody(requestPasswordResetSchema, payload);
+
+    const betterAuthResponse = await auth.api.requestPasswordResetPhoneNumber({
+      body,
+    });
+
+    return betterAuthResponse;
+  }
+
+  async resetPassword(payload: unknown) {
+    const body = this.parseBody(resetPasswordSchema, payload);
+
+    const betterAuthResponse = await auth.api.resetPasswordPhoneNumber({
+      body,
+    });
 
     return betterAuthResponse;
   }

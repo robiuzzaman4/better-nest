@@ -22,6 +22,13 @@ export class AuthController {
     return apiResponse(data, 'Phone number verified');
   }
 
+  @Post('phone-number/register')
+  async registerWithPhoneNumber(@Body() body: unknown) {
+    const data = await this.authService.registerWithPhoneNumber(body);
+
+    return apiResponse(data, 'Registration successful');
+  }
+
   @Post('sign-in/phone-number')
   async signInPhoneNumber(@Body() body: unknown) {
     const data = await this.authService.signInPhoneNumber(body);

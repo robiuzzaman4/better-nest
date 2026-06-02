@@ -147,7 +147,49 @@ Verifies the OTP. If the user does not exist, Better Auth creates the account. T
   curl -X POST http://localhost:5000/api/v1/auth/phone-number/verify -H "Content-Type: application/json" -d "{\"phoneNumber\":\"+8801712345678\",\"code\":\"123456\",\"name\":\"John Doe\"}"
   ```
 
-### 3. Sign In With Phone Number
+### 3. Register with Phone Number
+
+Registers a new user by verifying the OTP and setting a password in a single step. After this, the user can sign in with their phone number and password.
+
+- **Endpoint**: `POST /api/v1/auth/phone-number/register`
+- **Requires Auth**: No
+- **Request Body**:
+  ```json
+  {
+    "phoneNumber": "+8801712345678",
+    "code": "123456",
+    "name": "John Doe",
+    "password": "strongPassword123"
+  }
+  ```
+- **Response**:
+  ```json
+  {
+    "success": true,
+    "status": 201,
+    "message": "Registration successful",
+    "data": {
+      "status": true,
+      "token": null,
+      "user": {
+        "id": "user-id",
+        "name": "John Doe",
+        "email": "8801712345678@phone.rusign.com",
+        "emailVerified": false,
+        "phoneNumber": "+8801712345678",
+        "phoneNumberVerified": true,
+        "createdAt": "2026-05-30T00:00:00.000Z",
+        "updatedAt": "2026-05-30T00:00:00.000Z"
+      }
+    }
+  }
+  ```
+- **cURL Command**:
+  ```bash
+  curl -X POST http://localhost:5000/api/v1/auth/phone-number/register -H "Content-Type: application/json" -d "{\"phoneNumber\":\"+8801712345678\",\"code\":\"123456\",\"name\":\"John Doe\",\"password\":\"strongPassword123\"}"
+  ```
+
+### 4. Sign In With Phone Number
 
 Signs in an existing phone-number user using their password. This route returns the Better Auth session token in the response data.
 

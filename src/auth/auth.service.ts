@@ -31,6 +31,16 @@ const resetPasswordSchema = z.object({
   newPassword: z.string().min(1, 'newPassword is required'),
 });
 
+const registerPhoneNumberSchema = z.object({
+  phoneNumber: z.string().trim().min(1, 'phoneNumber is required'),
+  code: z.string().trim().min(1, 'code is required'),
+  name: z.string().trim().min(1, 'name is required'),
+  password: z
+    .string()
+    .min(8, 'password must be at least 8 characters')
+    .max(128, 'password must be at most 128 characters'),
+});
+
 @Injectable()
 export class AuthService {
   async sendPhoneNumberOtp(payload: unknown) {
@@ -63,6 +73,32 @@ export class AuthService {
           name: body.name,
           updatedAt: new Date(),
         })
+        .where(eq(user.id, betterAuthResponse.user.id));
+
+      betterAuthResponse.user.name = body.name;
+    }
+
+    return betterAuthResponse;
+  }
+
+  async registerWithPhoneNumber(payload: unknown) {
+    const body = this.parseBody(registerPhoneNumberSchema, payload);
+
+    // Single call — password flows as extra field to callbackOnVerification hook
+    const betterAuthResponse = await auth.api.verifyPhoneNumber({
+      body: {
+        phoneNumber: body.phoneNumber,
+        code: body.code,
+        password: body.password,
+        disableSession: true,
+      },
+    });
+
+    // Update user name in DB
+    if (betterAuthResponse.user?.id) {
+      await db
+        .update(user)
+        .set({ name: body.name, updatedAt: new Date() })
         .where(eq(user.id, betterAuthResponse.user.id));
 
       betterAuthResponse.user.name = body.name;

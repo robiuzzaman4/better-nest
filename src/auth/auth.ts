@@ -25,6 +25,13 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24, // 1 day
   },
 
+  // === EMAIL & PASSWORD (enables credential provider for phone+password sign-in) ===
+  emailAndPassword: {
+    enabled: true,
+    minPasswordLength: 8,
+    maxPasswordLength: 128,
+  },
+
   // === SOCIAL PROVIDERS ===
   socialProviders: {
     google: {
@@ -47,6 +54,34 @@ export const auth = betterAuth({
       signUpOnVerification: {
         getTempEmail: (phone) => `${phone.replace(/\+/g, '')}@phone.rusign.com`,
         getTempName: (phone) => phone,
+      },
+      // Hash password & create credential account during OTP verification.
+      // The password is passed as an extra body field from the /register endpoint.
+      callbackOnVerification: async ({ phoneNumber: phone, user }, ctx) => {
+        const body = (ctx as unknown as { body: Record<string, unknown> })
+          ?.body;
+        const password = body?.password;
+
+        if (typeof password !== 'string' || password.length < 8) {
+          return;
+        }
+
+        // Prevent duplicate credential accounts on re-verification
+        const accounts =
+          await ctx!.context.internalAdapter.findAccountByUserId(user.id);
+        const hasCredential = accounts.some(
+          (a) => a.providerId === 'credential',
+        );
+
+        if (!hasCredential) {
+          const hashedPassword = await ctx!.context.password.hash(password);
+          await ctx!.context.internalAdapter.createAccount({
+            userId: user.id,
+            providerId: 'credential',
+            accountId: user.id,
+            password: hashedPassword,
+          });
+        }
       },
     }),
   ],
